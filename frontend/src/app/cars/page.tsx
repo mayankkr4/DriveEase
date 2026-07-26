@@ -1,7 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
-import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const cars = [
@@ -12,7 +12,7 @@ const cars = [
     location: "Delhi",
     price: "₹3,500/day",
     image:
-    "https://images.91wheels.com/assets/c_images/gallery/mahindra/scorpio/mahindra-scorpio-6-1766743994.png?w=520&q=40"
+      "https://images.91wheels.com/assets/c_images/gallery/mahindra/scorpio/mahindra-scorpio-6-1766743994.png?w=520&q=40",
   },
   {
     id: 2,
@@ -61,23 +61,17 @@ const cars = [
   },
 ];
 
-export default function CarsPage() {
+function CarsContent() {
+  const searchParams = useSearchParams();
+  const location = searchParams.get("location") || "";
 
-    const searchParams = useSearchParams();
-  
-    const location = searchParams.get("location") || "";  
-
-    const filteredCars = cars.filter((car) => {
-
-        if(location==="") return true;
-      
-        return car.location.toLowerCase()===location.toLowerCase();
-      
-      });
+  const filteredCars = cars.filter((car) => {
+    if (location === "") return true;
+    return car.location.toLowerCase() === location.toLowerCase();
+  });
 
   return (
     <div className="bg-gray-100 min-h-screen pt-28">
-      {/* Header */}
       <div className="bg-blue-700 text-white py-16">
         <h1 className="text-5xl font-bold text-center">
           Find Your Perfect Car
@@ -88,19 +82,12 @@ export default function CarsPage() {
         </p>
       </div>
 
-      {/* Search */}
-      <div className="max-w-6xl mx-auto mt-10 px-5">
-        
-      </div>
-
-      {/* Cars */}
       <div className="max-w-7xl mx-auto py-12 px-5 grid md:grid-cols-3 gap-8">
-
         {filteredCars.length > 0 ? (
           filteredCars.map((car) => (
             <div
               key={car.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition duration-300"
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
             >
               <img
                 src={car.image}
@@ -109,24 +96,18 @@ export default function CarsPage() {
               />
 
               <div className="p-5">
-                <h2 className="text-2xl font-bold">
-                  {car.name}
-                </h2>
+                <h2 className="text-2xl font-bold">{car.name}</h2>
 
-                <p className="text-gray-500 mt-2">
-                  {car.type}
-                </p>
+                <p className="text-gray-500">{car.type}</p>
 
-                <p className="mt-2 text-lg">
-                  📍 {car.location}
-                </p>
+                <p>📍 {car.location}</p>
 
-                <p className="text-blue-600 font-bold text-2xl mt-4">
+                <p className="text-blue-600 font-bold text-2xl">
                   {car.price}
                 </p>
 
                 <Link href={`/cars/${car.id}`}>
-                  <button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">
+                  <button className="mt-5 w-full bg-blue-600 text-white py-3 rounded-lg">
                     View Details
                   </button>
                 </Link>
@@ -139,13 +120,18 @@ export default function CarsPage() {
               🚫 No Cars Available
             </h2>
 
-            <p className="text-gray-600 mt-4 text-lg">
-              No cars found for "<b>{location}</b>"
-            </p>
+            <p>No cars found for "{location}"</p>
           </div>
         )}
-
       </div>
     </div>
+  );
+}
+
+export default function CarsPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+      <CarsContent />
+    </Suspense>
   );
 }
