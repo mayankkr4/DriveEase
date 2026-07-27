@@ -1,8 +1,4 @@
-"use client";
-
-import { Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 const cars = [
   {
@@ -20,8 +16,7 @@ const cars = [
     type: "SUV",
     location: "Mumbai",
     price: "₹4,200/day",
-    image:
-      "https://acko-cms.ackoassets.com/2024_XUV_700_a943551b1e.png",
+    image: "https://acko-cms.ackoassets.com/2024_XUV_700_a943551b1e.png",
   },
   {
     id: 3,
@@ -61,22 +56,23 @@ const cars = [
   },
 ];
 
-function CarsContent() {
-  const searchParams = useSearchParams();
-  const location = searchParams.get("location") || "";
+export default async function CarsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ location?: string }>;
+}) {
+  const params = await searchParams;
+  const location = params.location ?? "";
 
   const filteredCars = cars.filter((car) => {
-    if (location === "") return true;
+    if (!location) return true;
     return car.location.toLowerCase() === location.toLowerCase();
   });
 
   return (
     <div className="bg-gray-100 min-h-screen pt-28">
       <div className="bg-blue-700 text-white py-16">
-        <h1 className="text-5xl font-bold text-center">
-          Find Your Perfect Car
-        </h1>
-
+        <h1 className="text-5xl font-bold text-center">Find Your Perfect Car</h1>
         <p className="text-center mt-4 text-lg">
           Rent Premium SUVs at Affordable Prices
         </p>
@@ -85,26 +81,14 @@ function CarsContent() {
       <div className="max-w-7xl mx-auto py-12 px-5 grid md:grid-cols-3 gap-8">
         {filteredCars.length > 0 ? (
           filteredCars.map((car) => (
-            <div
-              key={car.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden"
-            >
-              <img
-                src={car.image}
-                alt={car.name}
-                className="w-full h-60 object-cover"
-              />
+            <div key={car.id} className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <img src={car.image} alt={car.name} className="w-full h-60 object-cover" />
 
               <div className="p-5">
                 <h2 className="text-2xl font-bold">{car.name}</h2>
-
                 <p className="text-gray-500">{car.type}</p>
-
                 <p>📍 {car.location}</p>
-
-                <p className="text-blue-600 font-bold text-2xl">
-                  {car.price}
-                </p>
+                <p className="text-blue-600 font-bold text-2xl">{car.price}</p>
 
                 <Link href={`/cars/${car.id}`}>
                   <button className="mt-5 w-full bg-blue-600 text-white py-3 rounded-lg">
@@ -116,22 +100,11 @@ function CarsContent() {
           ))
         ) : (
           <div className="col-span-3 text-center py-20">
-            <h2 className="text-4xl font-bold text-red-600">
-              🚫 No Cars Available
-            </h2>
-
+            <h2 className="text-4xl font-bold text-red-600">🚫 No Cars Available</h2>
             <p>No cars found for "{location}"</p>
           </div>
         )}
       </div>
     </div>
-  );
-}
-
-export default function CarsPage() {
-  return (
-    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
-      <CarsContent />
-    </Suspense>
   );
 }
